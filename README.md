@@ -7,14 +7,19 @@ The core of our project is a basic pipeline template that includes two essential
 - Data preprocessing (_preprocess.py_)
 - Model training (_train_model.py_)
 
-![pipeline.jpeg](./images/pipeline.jpeg)
+<p align="center">
+<img src="./images/pipeline.jpeg" width="650" alt="Training Pipeline" />
+</p>
 
 Our methodology involves utilizing a script (_parallel_pipelines_api.py_) to dynamically create instances of this 
 pipeline with different parameters. We orchestrate these pipelines through API calls, 
 monitor their progress, and upon completion, fetch the output of the training steps. Finally, we use another script to 
 predict the outcomes using the trained models.
 
-![diagram.jpg](./images/diagram.jpg)
+<p align="center">
+<img src="./images/diagram.jpg" width="750" alt="Project's diagram" />
+</p>
+
 
 ## Configuration
 
@@ -73,8 +78,9 @@ This section provides an in-depth explanation of the _parallel_pipelines_api.py_
 - **Authentication:** Utilizes a Valohai API token from an environment variable for secure API requests.
 
 - **Creating Pipelines:** Iterates over combinations of datasets (harbors) and epochs, updating and creating pipelines through POST requests to Valohai.
-![created_pipelines.jpeg](./images/created_pipelines.jpeg)
-
+<p align="center">
+<img src="./images/created_pipelines.jpeg" width="650" alt="Created Pipelines" />
+</p>
 - **Monitoring and Completion:** Periodically checks the status of each pipeline, ensuring all are completed before proceeding.
 
 - **Prediction Execution:** After all pipelines complete, compiles training execution IDs and triggers a prediction execution with a final POST request.
