@@ -81,6 +81,7 @@ This section provides an in-depth explanation of the _parallel_pipelines_api.py_
 <p align="center">
 <img src="./images/created_pipelines.jpeg" width="650" alt="Created Pipelines" />
 </p>
+
 - **Monitoring and Completion:** Periodically checks the status of each pipeline, ensuring all are completed before proceeding.
 
 - **Prediction Execution:** After all pipelines complete, compiles training execution IDs and triggers a prediction execution with a final POST request.
