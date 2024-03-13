@@ -20,7 +20,7 @@
 
 - step:
     name: predict-models
-    image: docker.io/noorai/dynamic-pipelines-demo:0.1
+    image: valohai/dynamic-pipelines-demo:0.1
     environment: aws-eu-west-1-g4dn-xlarge
     command:
       - python predict.py {parameters}
@@ -41,15 +41,17 @@
 
 - step:
     name: preprocess-dataset
-    image: docker.io/noorai/dynamic-pipelines-demo:0.1
+    image: valohai/dynamic-pipelines-demo:0.1
     environment: aws-eu-west-1-g4dn-xlarge
     command:
       - python ./preprocess.py
     inputs:
       - name: dataset
-        default: s3://valohai-demo-library-data/dynamic-pipelines/train/images.zip
+        default: https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/images.zip
       - name: labels
-        default: s3://valohai-demo-library-data/dynamic-pipelines/train/*.csv
+        default:
+        - https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_A.csv
+        - https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_B.csv
     parameters:
       - name: dataset_name
         default: harbor_A
@@ -59,7 +61,7 @@
 
 - step:
     name: train
-    image: docker.io/noorai/dynamic-pipelines-demo:0.1
+    image: valohai/dynamic-pipelines-demo:0.1
     environment: aws-eu-west-1-g4dn-xlarge
     command:
       - python ./train_model.py {parameters}
