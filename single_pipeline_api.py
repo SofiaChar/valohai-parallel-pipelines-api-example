@@ -17,14 +17,10 @@ def create_big_pipeline(harbors, epochs_values):
     dynamic_pipeline_json["edges"] = []  # Reset edges
     dynamic_pipeline_json["title"] = "single-training-pipeline"
 
-    print(harbors)
-    print(epochs_values)
-
     train_nodes = []
     node_count = 0
     for epochs in epochs_values:
         for harbor in harbors:
-            print(harbor)
             preprocess_node_name = f"preprocess{node_count}"
             train_node_name = f"train{node_count}"
 
@@ -60,7 +56,7 @@ def create_big_pipeline(harbors, epochs_values):
         "name": "predict",
         "type": "execution",
         "template": {
-            "environment": "01764236-1f69-fea3-392a-be679bf067b3",
+            "environment": dynamic_pipeline_json["nodes"][0]["template"]["environment"],
             "commit": "main",
             "step": "predict-models",
             "image": "valohai/dynamic-pipelines-demo:0.1",
@@ -100,7 +96,7 @@ def create_big_pipeline(harbors, epochs_values):
         json=dynamic_pipeline_json,
     )
     if resp.status_code == 201:
-        print(f"Big pipeline created successfully.")
+        print(f"Single big pipeline created successfully.")
         return resp.json()["id"]
     else:
         print('Error occurred: ', resp.status_code)
