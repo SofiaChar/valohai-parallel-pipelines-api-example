@@ -8,16 +8,22 @@ The core of our project is a basic pipeline template that includes two essential
 - Model training (_train_model.py_)
 
 <p align="center">
-<img src="./images/pipeline.jpeg" width="650" alt="Training Pipeline" />
+<img src="./images/pipeline.jpeg" width="450" alt="Training Pipeline" />
 </p>
 
-Our methodology involves utilizing a script (_parallel_pipelines_api.py_) to dynamically create instances of this 
+Our methodology involves utilizing a script (`parallel_pipelines_api.py`) to dynamically create instances of this 
 pipeline with different parameters. We orchestrate these pipelines through API calls, 
 monitor their progress, and upon completion, fetch the output of the training steps. Finally, we use another script to 
 predict the outcomes using the trained models.
 
 <p align="center">
-<img src="./images/diagram.jpg" width="750" alt="Project's diagram" />
+<img src="./images/muti-pipeline-diagram.jpg" width="650" alt="Project's diagram" />
+</p>
+
+Our second approach introduces the creation of a unified, extensive pipeline via the API, which flexibly adjusts its node count based on the provided parameters. This functionality is showcased in the `single_pipeline_api.py` script.
+
+<p align="center">
+<img src="./images/big_pipeline.jpeg" width="550" alt="Created Pipelines" />
 </p>
 
 
@@ -56,6 +62,8 @@ Navigate to `utils/api_jsons.py` in your project folder and update the following
 - `"project": "<your-project-id>"`
 - `"environment": "<your-environment-id-if-required>"`
 
+You will also need to change these in the `single_pipeline_api.py`.
+
 4. **Run the Code on Valohai:**
 
 You have two options to execute your code on Valohai:
@@ -85,6 +93,13 @@ This section provides an in-depth explanation of the _parallel_pipelines_api.py_
 - **Monitoring and Completion:** Periodically checks the status of each pipeline, ensuring all are completed before proceeding.
 
 - **Prediction Execution:** After all pipelines complete, compiles training execution IDs and triggers a prediction execution with a final POST request.
+
+## Single Pipeline API script
+Creates one large pipeline, the number of nodes is dynamic it depends on the parameters that are passed to the single_pipeline_api.py script.
+
+- **Flexible Pipeline Setup:** The script creates a flexible pipeline on Valohai, changing the number of steps based on inputs like harbors and epochs. It sets up steps for both data preparation and model training, allowing for easy adjustments and scalable training.
+
+- **Automatic Prediction:** After setting up for data prep and training, the script adds a final step for predictions, linking it to all the training steps. This ensures that after training, it automatically moves on to make predictions with the trained models.
 
 ## Predictions Script
 The _predict.py_ script is designed to automate the prediction process by leveraging trained models and test datasets. Here's a quick rundown of its functionality:
