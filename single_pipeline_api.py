@@ -1,7 +1,10 @@
 import requests
 import time
+import copy
 import os
 import valohai
+
+from utils.api_jsons import create_pipeline
 
 # Retrieve Valohai API token from environment variable
 auth_token = os.environ.get("VALOHAI_API_TOKEN")
@@ -9,70 +12,39 @@ HEADERS = {'Authorization': 'Token %s' % auth_token}
 
 
 def create_big_pipeline(harbors, epochs_values):
-    create_pipeline = {
-        "edges": [],
-        "nodes": [],
-        "project": "018e1923-e286-194d-b5b5-4819a17e6f65",
-        "tags": [],
-        "parameters": {},
-        "title": "single-training-pipeline"
-    }
+    dynamic_pipeline_json = copy.deepcopy(create_pipeline)
+    dynamic_pipeline_json["nodes"] = []  # Reset nodes to start fresh for this dynamic creation
+    dynamic_pipeline_json["edges"] = []  # Reset edges
+    dynamic_pipeline_json["title"] = "single-training-pipeline"
+
+    print(harbors)
+    print(epochs_values)
+
     train_nodes = []
     node_count = 0
     for epochs in epochs_values:
         for harbor in harbors:
+            print(harbor)
             preprocess_node_name = f"preprocess{node_count}"
             train_node_name = f"train{node_count}"
-            # Add preprocess node
-            create_pipeline["nodes"].append({
-                "name": preprocess_node_name,
-                "type": "execution",
-                "template": {
-                    "environment": "01764236-1f69-fea3-392a-be679bf067b3",
-                    "commit": "main",
-                    "step": "preprocess-dataset",
-                    "image": "valohai/dynamic-pipelines-demo:0.1",
-                    "command": "python ./preprocess.py",
-                    "inputs": {
-                        "dataset": [
-                            "s3://valohai-demo-library-data/dynamic-pipelines/train/images.zip"
-                        ],
-                        "labels": [
-                          'https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_A.csv',
-                          'https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_B.csv'
-                        ]
-                    },
-                    "parameters": {
-                        "dataset_name": harbor,
-                        "validation_split": 0.3
-                    },
-                }
-            })
-            # Add train node
-            create_pipeline["nodes"].append({
-                "name": train_node_name,
-                "type": "execution",
-                "template": {
-                    "environment": "01764236-1f69-fea3-392a-be679bf067b3",
-                    "commit": "main",
-                    "step": "train",
-                    "image": "valohai/dynamic-pipelines-demo:0.1",
-                    "command": "python ./train_model.py {parameters}",
-                    "inputs": {
-                        "dataset": [
-                            "dataset://{parameter:dataset_name}_train/latest"
-                        ]
-                    },
-                    "parameters": {
-                        "epochs": epochs,
-                        "dataset_name": harbor,
-                        "learning_rate": 0.001,
-                        "batch_size": 64,
-                    },
-                }
-            })
-            # Create edges between preprocess and train
-            create_pipeline["edges"].append({
+
+            # Clone and update preprocess node from create_pipeline
+            preprocess_node = copy.deepcopy(create_pipeline["nodes"][0])
+            preprocess_node["name"] = preprocess_node_name
+            preprocess_node["template"]["parameters"]["dataset_name"] = harbor
+
+            # Clone and update train node from create_pipeline
+            train_node = copy.deepcopy(create_pipeline["nodes"][1])
+            train_node["name"] = train_node_name
+            train_node["template"]["parameters"]["dataset_name"] = harbor
+            train_node["template"]["parameters"]["epochs"] = epochs
+
+            # Add updated nodes to dynamic_pipeline_json
+            dynamic_pipeline_json["nodes"].append(preprocess_node)
+            dynamic_pipeline_json["nodes"].append(train_node)
+
+            # Create and add edge between preprocess and train nodes
+            dynamic_pipeline_json["edges"].append({
                 "source_node": preprocess_node_name,
                 "source_key": "run_training_for",
                 "source_type": "metadata",
@@ -84,7 +56,7 @@ def create_big_pipeline(harbors, epochs_values):
             node_count += 1
 
     # Create predicting node
-    create_pipeline["nodes"].append({
+    dynamic_pipeline_json["nodes"].append({
         "name": "predict",
         "type": "execution",
         "template": {
@@ -110,7 +82,7 @@ def create_big_pipeline(harbors, epochs_values):
 
     # Connect each train node to the predict node
     for train_node_name in train_nodes:
-        create_pipeline["edges"].append({
+        dynamic_pipeline_json["edges"].append({
             "source_node": train_node_name,
             "source_key": "*",
             "source_type": "output",
@@ -119,32 +91,35 @@ def create_big_pipeline(harbors, epochs_values):
             "target_key": "models"
 
         })
-
+    print('The JSON of an API request')
+    print(dynamic_pipeline_json)
+    print()
     resp = requests.post(
         url="https://app.valohai.com/api/v0/pipelines/",
         headers=HEADERS,
-        json=create_pipeline,
+        json=dynamic_pipeline_json,
     )
     if resp.status_code == 201:
         print(f"Big pipeline created successfully.")
         return resp.json()["id"]
     else:
         print('Error occurred: ', resp.status_code)
+        print(resp.text)
         return None
 
 
 if __name__ == "__main__":
-    harbours = valohai.parameters('harbours').value
-    harbours = ''.join(harbours).split(',')
+    harbors = valohai.parameters('harbours').value
+    harbors = ''.join(harbors).split(',')
 
     epochs_values = valohai.parameters('epochs').value
     epochs_values = ''.join(epochs_values).split(',')
 
     print('Parameters: ')
-    print('harbours: ', harbours)
+    print('harbors: ', harbors)
     print('epochs: ', epochs_values)
 
-    pipeline_ids = create_big_pipeline(harbours, epochs_values)
+    pipeline_ids = create_big_pipeline(harbors, epochs_values)
 
 
 
