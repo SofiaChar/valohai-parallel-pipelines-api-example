@@ -73,12 +73,13 @@ if __name__ == "__main__":
 
     # API get exec ids
     harbours = valohai.parameters('harbours').value
+    print(harbours)
     harbours = ''.join(harbours).split(',')
     print(harbours)
 
     # Get exec ids if we are running parallel_pipelines
     exec_ids = valohai.parameters('exec_ids').value
-    if exec_ids != ['']:
+    if exec_ids[0] != '':
         exec_ids = ''.join(exec_ids).split(',')
         print('Executions to get the outputs from:', exec_ids)
 
