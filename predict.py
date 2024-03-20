@@ -70,7 +70,6 @@ def run_predictions(dataset_names, model_paths_all, testset_data_paths):
 
 if __name__ == "__main__":
     models_path = '/valohai/inputs/models/*.h5'
-    print(os.listdir('/valohai/inputs/models/'))
 
     # API get exec ids
     harbours = valohai.parameters('harbours').value
