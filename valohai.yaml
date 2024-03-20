@@ -19,6 +19,26 @@
         type: integer
 
 - step:
+    name: single-training-pipeline-api
+    environment: azure-westeurope-f2sv2
+    image: python:3.9
+    command:
+      - pip install requests
+      - pip install valohai-utils
+      - python single_pipeline_api.py {parameters}
+    parameters:
+      - name: harbours
+        default: [harbor_A, harbor_B]
+        type: string
+        multiple: separate
+        multiple-separator: ','
+      - name: epochs
+        default: [2, 5]
+        multiple: separate
+        multiple-separator: ","
+        type: integer
+
+- step:
     name: predict-models
     image: valohai/dynamic-pipelines-demo:0.1
     environment: aws-eu-west-1-g4dn-xlarge
@@ -29,6 +49,8 @@
         default:
           - dataset://harbor_A_test/latest
           - dataset://harbor_B_test/latest
+      - name: models
+        optional: true
     parameters:
       - name: exec_ids
         multiple: separate
@@ -93,4 +115,3 @@
         step: train
     edges:
       - [preprocess.metadata.run_training_for, train.parameter.dataset_name]
-
