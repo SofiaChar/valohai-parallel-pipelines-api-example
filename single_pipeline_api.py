@@ -87,7 +87,7 @@ def create_big_pipeline(harbors, epochs_values):
         "type": "execution",
         "template": {
             "environment": "01764236-1f69-fea3-392a-be679bf067b3",
-            "commit": "~b3926d0f642f5352c362b8a399407c3dc0abe82708ca01a4cd1eddab1c33f804",
+            "commit": "main",
             "step": "predict-models",
             "image": "python:3.9",
             "command": "pip install numpy valohai-utils\npython ./predict.py",
