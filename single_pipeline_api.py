@@ -31,14 +31,15 @@ def create_big_pipeline(harbors, epochs_values):
                     "environment": "01764236-1f69-fea3-392a-be679bf067b3",
                     "commit": "main",
                     "step": "preprocess-dataset",
-                    "image": "docker.io/noorai/dynamic-pipelines-demo:0.1",
+                    "image": "valohai/dynamic-pipelines-demo:0.1",
                     "command": "python ./preprocess.py",
                     "inputs": {
                         "dataset": [
                             "s3://valohai-demo-library-data/dynamic-pipelines/train/images.zip"
                         ],
                         "labels": [
-                            "s3://valohai-demo-library-data/dynamic-pipelines/train/*.csv"
+                          'https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_A.csv',
+                          'https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_B.csv'
                         ]
                     },
                     "parameters": {
@@ -55,7 +56,7 @@ def create_big_pipeline(harbors, epochs_values):
                     "environment": "01764236-1f69-fea3-392a-be679bf067b3",
                     "commit": "main",
                     "step": "train",
-                    "image": "docker.io/noorai/dynamic-pipelines-demo:0.1",
+                    "image": "valohai/dynamic-pipelines-demo:0.1",
                     "command": "python ./train_model.py {parameters}",
                     "inputs": {
                         "dataset": [
@@ -65,7 +66,8 @@ def create_big_pipeline(harbors, epochs_values):
                     "parameters": {
                         "epochs": epochs,
                         "dataset_name": harbor,
-                        # Add other parameters as needed
+                        "learning_rate": 0.001,
+                        "batch_size": 64,
                     },
                 }
             })
@@ -89,8 +91,8 @@ def create_big_pipeline(harbors, epochs_values):
             "environment": "01764236-1f69-fea3-392a-be679bf067b3",
             "commit": "main",
             "step": "predict-models",
-            "image": "python:3.9",
-            "command": "pip install numpy valohai-utils\npython ./predict.py",
+            "image": "valohai/dynamic-pipelines-demo:0.1",
+            "command": "python ./predict.py",
             "inputs": {
                 "dataset": [
                     "dataset://harbor_B_test/latest",
