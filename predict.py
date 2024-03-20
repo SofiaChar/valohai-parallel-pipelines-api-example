@@ -69,20 +69,27 @@ def run_predictions(dataset_names, model_paths_all, testset_data_paths):
 
 
 if __name__ == "__main__":
+    models_path = '/valohai/inputs/models'
+
     # API get exec ids
     harbours = valohai.parameters('harbours').value
     harbours = ''.join(harbours).split(',')
+    print(harbours)
 
+    # Get exec ids if we are running parallel_pipelines
     exec_ids = valohai.parameters('exec_ids').value
-    if exec_ids == ['']:
+    if exec_ids != ['']:
         exec_ids = ''.join(exec_ids).split(',')
         print('Executions to get the outputs from:', exec_ids)
 
         # Download output files
         download_output_files(exec_ids)
+        models_path = '*.h5'
+
+    model_paths_all = glob.glob(models_path)
 
     # Get model paths
-    model_paths_all = glob.glob("*.h5")
+    print(model_paths_all)
 
     # Get testset data paths
     testset_data_paths = glob.glob('/valohai/inputs/dataset/*')
