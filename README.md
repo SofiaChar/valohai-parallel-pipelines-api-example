@@ -64,7 +64,6 @@ Navigate to `utils/api_jsons.py` in your project folder and update the following
 - `"project": "<your-project-id>"`
 - `"environment": "<your-environment-id-if-required>"`
 
-You will also need to change these in the `single_pipeline_api.py`.
 
 4. **Run the Code on Valohai:**
 
@@ -103,10 +102,17 @@ Creates one large pipeline, the number of nodes is dynamic it depends on the par
 
 - **Automatic Prediction:** After setting up for data prep and training, the script adds a final step for predictions, linking it to all the training steps. This ensures that after training, it automatically moves on to make predictions with the trained models.
 
+After creating a JSON of the pipeline that we want to create, we send the request to Valohai that creates the pipeline.
+
+<p align="center">
+<img src="./images/created_big_pipeline.jpeg" width="650" alt="Created Pipelines" />
+</p>
+
 ## Predictions Script
 The _predict.py_ script is designed to automate the prediction process by leveraging trained models and test datasets. Here's a quick rundown of its functionality:
 
-- **Output File Download:** Initially, the script downloads model output files from specified execution IDs, utilizing the Valohai API for secure access.
+- **Output File Download:** Initially, the script downloads model output files from specified execution IDs, utilizing the Valohai API for secure access. 
+  - We skip this part when running `single_pipeline_api.py`. Since the model are passed through an edges, we retrieve the models from execution's `inputs`.
 - **Model Predictions:** The script loads models to predict ship categories in test datasets, then selects and saves a subset of images with their predicted categories for review.
 
 If you have any questions or suggestions feel free to contact us _**support@valohai.com**_.
