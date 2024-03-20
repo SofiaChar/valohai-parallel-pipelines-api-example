@@ -17,14 +17,15 @@ create_pipeline = {
                 "environment": "01764236-1f69-fea3-392a-be679bf067b3",
                 "commit": "main",
                 "step": "preprocess-dataset",
-                "image": "docker.io/noorai/dynamic-pipelines-demo:0.1",
+                "image": "valohai/dynamic-pipelines-demo:0.1",
                 "command": "python ./preprocess.py",
                 "inputs": {
                     "dataset": [
                         "s3://valohai-demo-library-data/dynamic-pipelines/train/images.zip"
                     ],
                     "labels": [
-                        "s3://valohai-demo-library-data/dynamic-pipelines/train/*.csv"
+                        'https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_A.csv',
+                        'https://valohai-demo-library-data.s3.eu-west-1.amazonaws.com/dynamic-pipelines/train/train_harbor_B.csv'
                     ]
                 },
                 "parameters": {
@@ -47,7 +48,7 @@ create_pipeline = {
                 "environment": "01764236-1f69-fea3-392a-be679bf067b3",
                 "commit": "main",
                 "step": "train",
-                "image": "docker.io/noorai/dynamic-pipelines-demo:0.1",
+                "image": "valohai/dynamic-pipelines-demo:0.1",
                 "command": "python ./train_model.py {parameters}",
                 "inputs": {
                     "dataset": [

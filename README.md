@@ -1,6 +1,8 @@
 # Parallel Pipelines with API
-Welcome to our repository, where we demonstrate how to create and manage multiple parallel pipelines using API calls. Our focus is on enabling the execution of several pipelines with varying parameters, retrieving the outputs from these executions (specifically, trained models), and making predictions with these trained models.
 
+Welcome to our repository, where we show two main ways to use API calls for managing machine learning tasks. First, we demonstrate how to set up and run several parallel pipelines. Each pipeline can have different settings, allowing us to handle various tasks, get trained models from these processes, and then use these models to make predictions.
+
+Building on this, our second method, highlighted in the single_pipeline_api.py script, offers a simpler, unified approach. In this method, we create one big pipeline that does the job of many smaller ones. This pipeline automatically adjusts to include steps for preparing data and training models based on the input parameters, and finishes with a step that brings all the models together to make predictions.
 ## Overview
 The core of our project is a basic pipeline template that includes two essential steps:
 
@@ -21,9 +23,9 @@ predict the outcomes using the trained models.
 </p>
 
 Our second approach introduces the creation of a unified, extensive pipeline via the API, which flexibly adjusts its node count based on the provided parameters. This functionality is showcased in the `single_pipeline_api.py` script.
-
+Keep in mind that this pipeline isn’t set up in the `valohai.yaml`. Instead, we show how to build any pipeline directly using the API in this example.
 <p align="center">
-<img src="./images/big_pipeline.jpeg" width="550" alt="Created Pipelines" />
+<img src="./images/big_pipeline.jpeg" width="550" alt="Single pipeline" />
 </p>
 
 
